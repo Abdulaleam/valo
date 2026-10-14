@@ -20,10 +20,11 @@
 		],
 		"fabric-datagen": [
 			"rainy.valo.ValoDataGenerator"
-		]
+		],
+		"client": ["rainy.valo.ValoClient"]
 	},
 	"mixins": [
-		"valo.mixins.json"
+
 	],
 	"depends": {
 		"fabricloader": ">=0.19.5",
