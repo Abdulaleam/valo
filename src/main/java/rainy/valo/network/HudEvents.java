@@ -10,6 +10,6 @@ public class HudEvents {
     private HudEvents() {}
 
     public static void send(ServerPlayerEntity p, int type, int value) {
-        ServerPlayNetworking.send(p, new HudEventsPayload(type, value));
+        ServerPlayNetworking.send(p, new HudEventPayload(type, value));
     }
 }
