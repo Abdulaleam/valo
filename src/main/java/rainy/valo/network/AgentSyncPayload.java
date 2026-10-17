@@ -1,9 +1,10 @@
-package rainy.valo;
+package rainy.valo.network;
 
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import rainy.valo.Valo;
 
 public record AgentSyncPayload(String agentId, int ultPoints, int ultCost, int activeRemaining, int activeTotal,
                                String status, int[] cdRemaining, int[] cdTotal, int [] charges) implements CustomPayload {
