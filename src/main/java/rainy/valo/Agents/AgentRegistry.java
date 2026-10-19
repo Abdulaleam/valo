@@ -8,6 +8,9 @@ public class AgentRegistry {
     private static final Map<String, Agent> AGENTS = new LinkedHashMap<>();
 
     static {
+        registerAgent(ReynaAgent.INSTANCE);
+
+
 
 
     }
@@ -19,6 +22,9 @@ public class AgentRegistry {
     }
     public static Agent get(String id) {
         return id == null ? null : AGENTS.get(id);
+    }
+    public static Collection<String> ids() {
+        return AGENTS.keySet();
     }
 
     public static Collection<Agent> all() {
