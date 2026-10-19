@@ -27,7 +27,8 @@ public class ReynaAgent extends Agent {
     private static final AbilityInfo[] ABILITIES = {
             new AbilityInfo("Leer", " Throw an Eye that nearsights anyone looking at it"),
             new AbilityInfo("Devour", "Consume a Soul Orb to heal and gain OverHeal"),
-            new AbilityInfo("Empress", "Gain speed, haste, strength , night vision")
+            new AbilityInfo("Dismiss", "Consume a soul orb to turn invisible and untouchable for 2s."),
+            new AbilityInfo("Empress", "Gain speed, haste, strength , night vision"),
     };
 
     private static final class ReynaState extends AgentState {
