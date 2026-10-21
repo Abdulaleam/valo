@@ -36,7 +36,7 @@ public final class ValorantHud {
         int totalW = BOX * 4 + GAP * 3;
         int activeRem = Math.max(0, d.activeRemaining() - elapsed);
 
-        var aura = HudAnimations.ultActive(d.agentId());
+        var aura = HudAnimation.ultActive(d.agentId());
         if (activeRem > 0) {
             aura.playIfStopped();
             aura.draw(ctx, 0, 0, sw, sh, 0.85f);
@@ -63,7 +63,7 @@ public final class ValorantHud {
             ctx.fill(x0, y0 - 4, x0 + w, y0 - 1, accent);
         }
 
-        HudAnimations.ULT_READY.draw(ctx, x0 + totalW / 2 - 64, y0 - 150, 128, 128, 1f);
+        HudAnimation.ULT_READY.draw(ctx, x0 + totalW / 2 - 64, y0 - 150, 128, 128, 1f);
 
         AbilityInfo[] abilities = agent.abilities();
         Identifier frameTex = ClientAssets.gui("hud/slot_frame");
