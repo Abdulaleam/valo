@@ -1,15 +1,13 @@
 {
   "category.valo": "Valorant",
-  "key.valo.slot_c": "Ability C (1st)",
-  "key.valo.slot_q": "Ability Q (2nd)",
-  "key.valo.slot_e": "Ability E (3rd)",
-  "key.valo.slot_x": "Ultimate X",
+  "key.valo.slot_c": "Ability C (1st) - Leer",
+  "key.valo.slot_q": "Ability Q (2nd) - Devour",
+  "key.valo.slot_e": "Ability E (3rd) - Dismiss",
+  "key.valo.slot_x": "Ultimate X - Empress",
+  "key.valo.agent_select": "Open Agent Select",
   "entity.valo.soul_orb": "Soul Orb",
   "entity.valo.leer_eye": "Leer Eye",
-  "entity.valo.smoke_cloud": "Cloudburst",
-  "key.valo.agent_select": "Open Agent Select",
   "item.valo.agent_card_reyna": "Agent Card: Reyna",
-  "item.valo.agent_card_jett": "Agent Card: Jett",
   "item.valo.radianite": "Radianite",
   "itemGroup.valo": "Valorant"
 }
