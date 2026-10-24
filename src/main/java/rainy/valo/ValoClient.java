@@ -25,6 +25,7 @@ import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 
 public class ValoClient implements ClientModInitializer {
+
     private static final String[] NAMES = {"slot_c", "slot_q", "slot_e", "slot_x"};
     private static final int[] DEFAULT_KEYS = {GLFW.GLFW_KEY_Z, GLFW.GLFW_KEY_X, GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V};
 
@@ -56,6 +57,16 @@ public class ValoClient implements ClientModInitializer {
             }
         });
 
+        ClientTickEvents.START_CLIENT_TICK.register(client -> {
+            if (client.player == null || client.currentScreen != null || !ClientHudState.leerArmed) return;
+            boolean fired = false;
+            while (client.options.attackKey.wasPressed()) fired = true;
+            if (fired) {
+                client.options.attackKey.setPressed(false);
+                ClientPlayNetworking.send(new AbilityPayLoad(4));
+            }
+        });
+
         ClientPlayNetworking.registerGlobalReceiver(AgentSyncPayload.ID,
                 (payload, context) -> ClientHudState.update(payload));
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ClientHudState.clear());
@@ -65,6 +76,7 @@ public class ValoClient implements ClientModInitializer {
             switch (payload.type()) {
                 case HudEvents.KILL -> ClientBanners.kill(payload.value());
                 case HudEvents.HIT -> ClientBanners.hit();
+                case HudEvents.ARM -> ClientHudState.leerArmed = payload.value() == 1;
                 default -> { }
             }
         });

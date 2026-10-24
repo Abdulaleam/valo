@@ -8,9 +8,8 @@ import org.apache.logging.log4j.core.jmx.Server;
 public abstract class Agent {
     public abstract String id();
     public abstract String displayName();
-    public String role() {
-        return "duelist";
-    }
+    public String role()
+    { return "duelist"; }
     public abstract int color();
     public abstract int ultCost();
     public abstract AbilityInfo[] abilities();
@@ -19,6 +18,10 @@ public abstract class Agent {
     public abstract boolean use(ServerPlayerEntity p, int slot, AgentState s, int now);
 
     public void useActiveUlt(ServerPlayerEntity p, AgentState s, int now) {}
+
+    public boolean onPrimaryFire(ServerPlayerEntity p, AgentState s, int now) {
+        return false;
+    }
 
     public void onSelect(ServerPlayerEntity p, AgentState s) {}
     public void onDeselect(ServerPlayerEntity p, AgentState s) {}

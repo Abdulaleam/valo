@@ -1,5 +1,6 @@
 package rainy.valo.Client;
 
+import rainy.valo.Valo;
 import rainy.valo.ValoClient;
 import rainy.valo.Agents.AbilityInfo;
 import rainy.valo.Agents.Agent;
@@ -39,13 +40,24 @@ public final class ValorantHud {
         var aura = HudAnimation.ultActive(d.agentId());
         if (activeRem > 0) {
             aura.playIfStopped();
-            aura.draw(ctx, 0, 0, sw, sh, 0.85f);
+            aura.drawCover(ctx, sw, sh, 0.5f);
         } else {
             aura.stop();
         }
 
         ClientAssets.draw(ctx, ClientAssets.gui("crosshair/" + d.agentId()), sw / 2 - 20, sh / 2 - 20, 40, 40, 1f, 1f, 1f, 0.85f);
         ClientBanners.render(ctx, tr, sw, sh, accent);
+
+        if (ClientHudState.leerArmed) {
+            Identifier eye = Identifier.of(Valo.MOD_ID, "textures/entity/leer_eye.png");
+            float t = (System.currentTimeMillis() % 2000L) / 2000f * 6.2831855f;
+            int size = 96;
+            int ex = sw - size - 90 + (int) (Math.sin(t) * 3);
+            int ey = sh - size - 90 + (int) (Math.cos(t * 2) * 3);
+            ClientAssets.draw(ctx, eye, ex, ey, size, size);
+            ctx.drawCenteredTextWithShadow(tr, "LEFT CLICK to throw  |  " + ValoClient.keyLabel(0) + " to cancel",
+                    sw / 2, sh - 110, 0xFFFFFFFF);
+        }
 
         String name = agent.displayName().toUpperCase();
         int nameX = x0;

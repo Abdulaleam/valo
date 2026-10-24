@@ -39,17 +39,28 @@ public final class SpriteAnimation {
         return loop || frameIndex() < frames;
     }
 
-    public void draw(DrawContext ctx, int x, int y, int w, int h, float alpha) {
+    public void drawCover(DrawContext ctx, int sw, int sh, float alpha) {
         if (!isPlaying())
             return;
-
         int f = frameIndex();
         if (loop) f %= frames;
-        if (f >= frames) {
-            stop();
+        if (f >= frames) { stop();
             return;
         }
+        int[] s = ClientAssets.size(texture);
+        if (s == null)
+            return;
+        float fw = s[0], fh = (float) s[1] / frames;
+        float scale = Math.max(sw / fw, sh / fh);
+        int w = Math.round(fw * scale), h = Math.round(fh * scale);
+        ClientAssets.drawFrame(ctx, texture, f, frames, (sw - w) / 2, (sh - h) / 2, w, h, alpha);
+    }
 
-        ClientAssets.drawFrame(ctx, texture, f, frames, x , y, w, h, alpha);
+    public void draw(DrawContext ctx, int x, int y, int w, int h, float alpha) {
+        if (!isPlaying()) return;
+        int f = frameIndex();
+        if (loop) f %= frames;
+        if (f >= frames) { stop(); return; }
+        ClientAssets.drawFrame(ctx, texture, f, frames, x, y, w, h, alpha);
     }
 }

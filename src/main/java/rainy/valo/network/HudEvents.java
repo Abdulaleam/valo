@@ -6,6 +6,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class HudEvents {
     public static final int KILL = 0;
     public static final int HIT = 1;
+    public static final int ARM = 2;
 
     private HudEvents() {}
 
