@@ -19,10 +19,10 @@ import java.util.UUID;
 
 public class LeerEntity extends Entity {
 
-    public static final double SPEED = 1.0;
-    public static final int TRAVEL_TICKS = 12;
+    public static final double SPEED = 0.8;
+    public static final int TRAVEL_TICKS = 8;
     public static final int LIFETIME = 60;
-    public static final double RADIUS = 10.0;
+    public static final double RADIUS = 40.0;
 
     private UUID owner;
     private boolean stopped;

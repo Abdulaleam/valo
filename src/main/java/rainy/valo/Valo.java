@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.impl.lib.sat4j.core.Vec;
@@ -15,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import rainy.valo.Agents.Agent;
 import rainy.valo.Agents.AgentManager;
 import rainy.valo.Agents.AgentRegistry;
@@ -35,6 +37,8 @@ public class Valo implements ModInitializer {
 		ValoParticles.registerValoParticles();
 		ModEntities.registerEntities();
 		AgentManager.init();
+		ServerLifecycleEvents.SERVER_STARTED.register(server ->
+				server.getGameRules().get(GameRules.NATURAL_REGENERATION).set(false, server));
 
 		PayloadTypeRegistry.playC2S().register(AbilityPayLoad.ID, AbilityPayLoad.CODEC);
 		PayloadTypeRegistry.playS2C().register(AgentSyncPayload.ID, AgentSyncPayload.CODEC);

@@ -3,7 +3,7 @@
 	"package": "rainy.valo.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"ExampleMixin"
+		"InGameHudMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

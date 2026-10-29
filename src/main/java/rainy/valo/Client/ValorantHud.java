@@ -2,6 +2,7 @@ package rainy.valo.Client;
 
 import rainy.valo.Valo;
 import rainy.valo.ValoClient;
+import rainy.valo.Entity.SoulOrbEntity;
 import rainy.valo.Agents.AbilityInfo;
 import rainy.valo.Agents.Agent;
 import rainy.valo.Agents.AgentRegistry;
@@ -11,7 +12,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.util.Identifier;
-
 
 public final class ValorantHud {
     private static final int BOX = 32;
@@ -34,6 +34,7 @@ public final class ValorantHud {
         int sw = ctx.getScaledWindowWidth(), sh = ctx.getScaledWindowHeight();
         int x0 = 10;
         int y0 = sh - 72;
+        int ax = x0 + 64;
         int totalW = BOX * 4 + GAP * 3;
         int activeRem = Math.max(0, d.activeRemaining() - elapsed);
 
@@ -59,6 +60,30 @@ public final class ValorantHud {
                     sw / 2, sh - 110, 0xFFFFFFFF);
         }
 
+        if (d.agentId().equals("reyna") && mc.world != null) {
+            SoulOrbEntity looked = SoulOrbEntity.findLooked(mc.world, mc.player, 30.0);
+            if (looked != null) {
+                int cx = sw / 2, cy = sh / 2 + 28;
+                float left = 1f - Math.min(1f, looked.age / (float) SoulOrbEntity.LIFETIME);
+                ctx.fill(cx - 70, cy - 4, cx + 70, cy + 22, 0xAA101018);
+                ctx.drawCenteredTextWithShadow(tr, "[" + ValoClient.keyLabel(1) + "] DEVOUR     [" + ValoClient.keyLabel(2) + "] DISMISS",
+                        cx, cy, accent);
+                ctx.fill(cx - 66, cy + 13, cx + 66, cy + 17, 0x88000000);
+                ctx.fill(cx - 66, cy + 13, cx - 66 + (int) (132 * left), cy + 17, accent);
+            }
+        }
+
+        int hp = Math.round(mc.player.getHealth() / mc.player.getMaxHealth() * 100f);
+        int hcol = hp > 30 ? 0xFFFFFFFF : 0xFFFF4D4D;
+        ctx.fill(x0 - 4, y0 - 2, x0 + 56, y0 + BOX + 14, 0xAA101018);
+        ctx.getMatrices().push();
+        ctx.getMatrices().scale(2.4f, 2.4f, 1f);
+        ctx.drawTextWithShadow(tr, String.valueOf(hp), (int) ((x0 + 2) / 2.4f), (int) ((y0 + 2) / 2.4f), hcol);
+        ctx.getMatrices().pop();
+        ctx.fill(x0, y0 + 26, x0 + 52, y0 + 29, 0x88000000);
+        ctx.fill(x0, y0 + 26, x0 + (int) (52 * hp / 100f), y0 + 29, hcol);
+        smallCentered(ctx, tr, "HP", x0 + 26, y0 + 34, 0xFFAAAAAA);
+
         String name = agent.displayName().toUpperCase();
         int nameX = x0;
         if (ClientAssets.draw(ctx, ClientAssets.gui("agent/" + d.agentId() + "_icon"), x0, y0 - 26, 22, 22)) {
@@ -71,22 +96,22 @@ public final class ValorantHud {
 
         if (activeRem > 0 && d.activeTotal() > 0) {
             int w = (int) (totalW * (activeRem / (float) d.activeTotal()));
-            ctx.fill(x0, y0 - 4, x0 + totalW, y0 - 1, 0x88000000);
-            ctx.fill(x0, y0 - 4, x0 + w, y0 - 1, accent);
+            ctx.fill(ax, y0 - 4, ax + totalW, y0 - 1, 0x88000000);
+            ctx.fill(ax, y0 - 4, ax + w, y0 - 1, accent);
         }
 
-        HudAnimation.ULT_READY.draw(ctx, x0 + totalW / 2 - 64, y0 - 150, 128, 128, 1f);
+        HudAnimation.ULT_READY.draw(ctx, ax + totalW / 2 - 64, y0 - 150, 128, 128, 1f);
 
         AbilityInfo[] abilities = agent.abilities();
         Identifier frameTex = ClientAssets.gui("hud/slot_frame");
         for (int i = 0; i < 4; i++) {
-            int x = x0 + i * (BOX + GAP);
+            int x = ax + i * (BOX + GAP);
             int y = y0;
             int rem = Math.max(0, d.cdRemaining()[i] - elapsed);
             int total = d.cdTotal()[i];
             int charges = d.charges()[i];
             boolean ultSlot = i == 3;
-            boolean usable = rem == 0 && charges != 0
+            boolean usable = rem == 0 && charges != 0 && charges != -2
                     && (!ultSlot || d.ultPoints() >= d.ultCost() || activeRem > 0);
 
             ctx.fill(x, y, x + BOX, y + BOX, 0xCC101018);
@@ -109,21 +134,27 @@ public final class ValorantHud {
                 ctx.drawBorder(x, y, BOX, BOX, usable ? accent : 0xFF555566);
             }
 
-            ctx.drawTextWithShadow(tr, ValoClient.keyLabel(i), x + 3, y + 3, usable ? 0xFFFFFFFF : 0xFF888899);
-            if (charges >= 0) {
-                String c = String.valueOf(charges);
-                ctx.drawTextWithShadow(tr, c, x + BOX - tr.getWidth(c) - 3, y + 3, charges > 0 ? accent : 0xFFAA4444);
-            }
+            String key = ValoClient.keyLabel(i).toUpperCase();
+            int kw = tr.getWidth(key);
+            int kx = x + BOX / 2 - kw / 2;
+            ctx.fill(kx - 3, y + BOX + 2, kx + kw + 3, y + BOX + 13, 0xCC101018);
+            ctx.fill(kx - 3, y + BOX + 12, kx + kw + 3, y + BOX + 13, usable ? accent : 0xFF555566);
+            ctx.drawTextWithShadow(tr, key, kx, y + BOX + 3, usable ? 0xFFFFFFFF : 0xFF888899);
 
-            smallCentered(ctx, tr, abilities[i].name(), x + BOX / 2, y + BOX + 2, usable ? 0xFFDDDDDD : 0xFF777788);
+            if (charges >= 0) {
+                for (int n = 0; n < charges; n++) {
+                    int dx = x + 4 + n * 7;
+                    ctx.fill(dx, y + BOX - 7, dx + 5, y + BOX - 2, accent);
+                }
+            }
         }
 
-        int pipY = y0 + BOX + 14;
+        int pipY = y0 + BOX + 18;
         boolean ready = d.ultPoints() >= d.ultCost();
         Identifier pipFull = ClientAssets.gui("hud/pip_full");
         Identifier pipEmpty = ClientAssets.gui("hud/pip_empty");
         for (int k = 0; k < d.ultCost(); k++) {
-            int px = x0 + k * 10;
+            int px = ax + k * 10;
             boolean filled = k < d.ultPoints();
             boolean drawn;
             if (filled) {
@@ -138,7 +169,7 @@ public final class ValorantHud {
         }
         if (ready && activeRem == 0) {
             ctx.drawTextWithShadow(tr, "READY [" + ValoClient.keyLabel(3) + "]",
-                    x0 + d.ultCost() * 10 + 4, pipY, 0xFFFFD34D);
+                    ax + d.ultCost() * 10 + 4, pipY, 0xFFFFD34D);
         }
     }
 
