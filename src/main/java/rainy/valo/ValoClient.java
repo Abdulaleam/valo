@@ -31,6 +31,14 @@ public class ValoClient implements ClientModInitializer {
 
     private static final KeyBinding[] KEYS = new KeyBinding[4];
     private static KeyBinding selectKey;
+    private static boolean unbound;
+
+
+    private static void unbindIfDefault(KeyBinding k) {
+        String t = k.getBoundKeyTranslationKey();
+        if (t.equals("key.keyboard.c") || t.equals("key.keyboard.x"))
+            k.setBoundKey(InputUtil.UNKNOWN_KEY);
+    }
 
     public static String keyLabel(int slot) {
         return KEYS[slot] == null ? "?" : KEYS[slot].getBoundKeyLocalizedText().getString();
@@ -46,6 +54,13 @@ public class ValoClient implements ClientModInitializer {
                 "key.valo.agent_select", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "category.valo"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if(!unbound) {
+                unbound = true;
+                unbindIfDefault(client.options.saveToolbarActivatorKey);
+                unbindIfDefault(client.options.loadToolbarActivatorKey);
+                KeyBinding.updateKeysByCode();
+                client.options.write();
+            }
             if (client.player == null) return;
             for (int i = 0; i < 4; i++) {
                 while (KEYS[i].wasPressed()) {
