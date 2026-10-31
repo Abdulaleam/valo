@@ -9,10 +9,13 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import rainy.valo.match.Sides;
+import rainy.valo.match.TeamManager;
 import rainy.valo.particles.ValoParticles;
 
 import java.util.UUID;
@@ -64,9 +67,11 @@ public class LeerEntity extends Entity {
             return;
         }
         if (age % 4 == 0) {
-
-            for (LivingEntity e: world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(RADIUS), x ->
-                    !x.getUuid().equals(owner))) {
+            ServerWorld sw = (ServerWorld) world;
+            ServerPlayerEntity ownerPlayer = owner == null ? null : sw.getServer().getPlayerManager().getPlayer(owner);
+            Sides ownerSide = ownerPlayer == null ? null : TeamManager.sideOf(sw.getServer(),ownerPlayer);
+            for (LivingEntity e : world.getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(RADIUS),
+                    x -> isTarget(sw, x, ownerSide))) {
                 Vec3d toEye = getPos().subtract(e.getEyePos()).normalize();
                 boolean facing = e.getRotationVec(1f).dotProduct(toEye) > 0.5;
                 if (facing && e.canSee(this)) {
@@ -75,6 +80,17 @@ public class LeerEntity extends Entity {
             }
 
         }
+    }
+
+    private boolean isTarget(ServerWorld sw, LivingEntity x, Sides ownerSide) {
+        if (x.getUuid().equals(owner))
+            return false;
+        if (ownerSide == null)
+            return true;
+        if (! (x instanceof ServerPlayerEntity p1))
+            return false;
+        Sides s = TeamManager.sideOf(sw.getServer(), p1);
+        return s != null && s != ownerSide;
     }
 
     private void stop() {
